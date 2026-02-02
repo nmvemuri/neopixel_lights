@@ -1,0 +1,55 @@
+#include <Adafruit_NeoPixel.h>
+
+#define PIN 6
+#define NUMPIXELS 144
+#define DELAYVAL 1600
+#define CHUNK 36  // number of LEDs added each step
+#define ENDDELAY 300
+
+Adafruit_NeoPixel strips(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
+void setup() {
+  strips.begin();
+  strips.clear();
+
+  // Light up the strip in chunks
+  for (int start = 0; start < NUMPIXELS; start += CHUNK) {
+
+    // Turn on the next CHUNK of pixels
+    for (int i = 0; i < CHUNK; i++) {
+      int pixelIndex = start + i;
+      if (pixelIndex < NUMPIXELS) {
+
+        // Map THIS pixel’s position to a smooth green -> red gradient
+        int greenVal = map(pixelIndex, 0, NUMPIXELS -1, 50, 0);
+        int redVal   = map(pixelIndex, 0, NUMPIXELS - 1, 0, 255);
+
+        strips.setPixelColor(pixelIndex, strips.Color(redVal, greenVal, 0));
+      }
+    }
+
+    strips.show();
+    delay(DELAYVAL);
+  }
+}
+
+void loop() {
+
+  // Turn OFF all pixels
+  strips.clear();
+  strips.show();
+  delay(ENDDELAY);
+
+  // Turn ON all pixels again (same gradient)
+  for (int i = 0; i < NUMPIXELS; i++) {
+    int greenVal = map(i, 0, NUMPIXELS - 1, 50, 0);
+    int redVal   = map(i, 0, NUMPIXELS - 1, 0, 255);
+    strips.setPixelColor(i, strips.Color(redVal, greenVal, 0));
+  }
+
+  strips.show();
+  delay(ENDDELAY);
+
+
+
+}
