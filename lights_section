@@ -1,0 +1,66 @@
+#include <Adafruit_NeoPixel.h>
+
+#define PIN_A 6
+#define PIN_B 7
+#define NUMPIXELS 144
+#define DELAYVAL 400
+#define CHUNK 36
+#define ENDDELAY 300
+
+Adafruit_NeoPixel stripA(NUMPIXELS, PIN_A, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel stripB(NUMPIXELS, PIN_B, NEO_GRB + NEO_KHZ800);
+
+void setup() {
+  stripA.begin();
+  stripB.begin();
+
+  stripA.clear();
+  stripB.clear();
+
+  // Light up the strips in chunks
+  for (int start = 0; start < NUMPIXELS; start += CHUNK) {
+
+    for (int i = 0; i < CHUNK; i++) {
+      int pixelIndex = start + i;
+      if (pixelIndex < NUMPIXELS) {
+
+        int greenVal = map(pixelIndex, 0, NUMPIXELS - 1, 50, 0);
+        int redVal   = map(pixelIndex, 0, NUMPIXELS - 1, 0, 255);
+
+        uint32_t color = stripA.Color(redVal, greenVal, 0);
+
+        stripA.setPixelColor(pixelIndex, color);
+        stripB.setPixelColor(pixelIndex, color);
+      }
+    }
+
+    stripA.show();
+    stripB.show();
+    delay(DELAYVAL);
+  }
+}
+
+void loop() {
+
+  // Turn OFF all pixels
+  stripA.clear();
+  stripB.clear();
+  stripA.show();
+  stripB.show();
+  delay(ENDDELAY);
+
+  // Turn ON all pixels again (same gradient)
+  for (int i = 0; i < NUMPIXELS; i++) {
+    int greenVal = map(i, 0, NUMPIXELS - 1, 50, 0);
+    int redVal   = map(i, 0, NUMPIXELS - 1, 0, 255);
+
+    uint32_t color = stripA.Color(redVal, greenVal, 0);
+
+    stripA.setPixelColor(i, color);
+    stripB.setPixelColor(i, color);
+  }
+
+  stripA.show();
+  stripB.show();
+  delay(ENDDELAY);
+}
